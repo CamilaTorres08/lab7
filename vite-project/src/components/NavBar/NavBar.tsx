@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
 import styles from "./NavBar.module.css"
 import logo from '../../assets/logo.png'; 
 import { Link } from 'react-router-dom';
 import  {useNavigate}  from 'react-router-dom';
-import { useAuth } from '../Context/UseAuth';
+import { jwtDecode } from "jwt-decode";
 
 type Props = {
-    username: string,
-    idUser?: string
+    username: string
 }
 
 function NavBar(props: Props) {
-    const {username, idUser} = props;
+    const {username} = props;
     const history = useNavigate();
     
-    const {isAdmin, logout } = useAuth();
+    const isAdmin = () => {
+        const token = sessionStorage.getItem("token");
+        if(token){
+            const role = Object.entries(jwtDecode(token))[0][1];
+            return role === 'ADMIN';
+        }
+        return false;
+        
+    };
+
+  
+    const logout = () => {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        history("/"); 
+    }
 
     const handleClick = () => {
         logout();  
@@ -31,12 +44,12 @@ function NavBar(props: Props) {
         <nav>
             <ul className={styles['nav-list']}>
                 <li>
-                    <Link to={`/${idUser}`} className={styles['nav-link']}>Tasks</Link>
+                    <Link to={"/user"} className={styles['nav-link']}>Tasks</Link>
                 </li>
                 {isAdmin() ? 
                 (
                 <li>
-                    <Link to={`/${idUser}/insights`} className={styles['nav-link']} >Insights</Link>
+                    <Link to={"/user/insights"} className={styles['nav-link']} >Insights</Link>
                 </li> )
                  : ''}
             </ul>        

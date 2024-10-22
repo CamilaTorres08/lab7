@@ -3,14 +3,12 @@ import styles from './Register.module.css'
 import  register from '../../assets/Register.png'
 import  {useNavigate}  from 'react-router-dom';
 import * as LoginService from '../Services/LoginService';
-import { useAuth } from '../Context/UseAuth';
 
 function Register() {
     const [emailUser, setImail] = useState('');
     const [password, setPassword] = useState('');
     const [userName, setUserName] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { registerUser } = useAuth();
 
     const handleImailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setImail(e.target.value);
@@ -36,41 +34,18 @@ function Register() {
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         console.log("Form submitted");
-        registerUser(emailUser,userName, password);
+        startRegister();
     };
 
 
-    /*const startRegister = async () => {
-        /*const newUser = { 
-            username: userName,
-            email: emailUser,
-            passwd: password
+    const startRegister = async () => {
+        const res = await LoginService.RegisterNewUser(userName, emailUser, password);
+        if(res){
+            console.log(res.data);
+            handleClick();
         }
-        try {
-            const data1 = await LoginService.RegisterNewUser(userName, emailUser, password);
-            if(data1){
-                console.log(data1.data.token);
-                
-            }
-            
-            //handleClick();
-        } catch (error: any) {
-            if (error.response) {
-                console.error("Error en el servidor: ", error.response.data);
-                alert(error.response.data);
-                throw new Error(error.response.data);  // Lanzamos el mensaje de error del backend
-            } else if (error.request) {
-                console.error("No se recibió respuesta del servidor", error.request);
-                alert( error.request);
-                throw new Error('No se recibió respuesta del servidor');
-            } else {
-                console.error("Error desconocido: ", error.message);
-                alert( error.message);
-                throw new Error('Ocurrió un error al procesar la solicitud');
-            }
-        }
-
-    }*/
+        
+    }
 
     return (
         <div className={styles['main-container']}>
@@ -102,7 +77,7 @@ function Register() {
                         </div>
                     </div>
                     <button className={styles['button']}  type='submit'>
-                    Let's Gooo!
+                    Let's Go!
                 </button>
                 </form>
             </div>

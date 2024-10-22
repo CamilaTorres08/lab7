@@ -4,18 +4,16 @@ import LoginImg from '../../assets/LoginImg.png'
 import { Link } from 'react-router-dom';
 import * as LoginService from '../Services/LoginService';
 import  {useNavigate}  from 'react-router-dom';
-import { jwtDecode } from "jwt-decode";
-import { useAuth } from '../Context/UseAuth';
+
 type Props = {}
 
 function Login(props: Props) {
-    const [username, setUsername] = useState('');
+    const [userName, setUserName] = useState('');
     const [password,setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { userLogin } = useAuth();
 
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUsername(e.target.value);
+        setUserName(e.target.value);
     }
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,36 +25,22 @@ function Login(props: Props) {
 
     const history = useNavigate();
 
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); 
-        console.log("Form submitted");
-        userLogin(username, password);
+    const handleClick = () => {
+        console.log(sessionStorage.getItem("token"));
+        history("/user"); 
     };
 
-    /*const startLogin = () =>{
-        
-        /*try {
-            const answer = await LoginService.LoginUser(username, password);
-            console.log(jwtDecode(answer.data['token']));
-            console.log(answer.data['userId']);
-            //handleClick(answer.data['userId']);
-        } catch (error: any) {
-            if (error.response) {
-                console.error("Error en el servidor: ", error.response.data);
-                alert(error.response.data);
-                throw new Error(error.response.data);  
-            } else if (error.request) {
-                console.error("No se recibió respuesta del servidor", error.request);
-                alert( error.request);
-                throw new Error('No se recibió respuesta del servidor');
-            } else {
-                console.error("Error desconocido: ", error.message);
-                alert( error.message);
-                throw new Error('Ocurrió un error al procesar la solicitud');
-            }
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); 
+        startLogin();
+    };
+    const startLogin = async () =>{
+        const answer = await LoginService.LoginUser(userName,password);
+        if(answer){
+            handleClick();
         }
-        userLogin(username, password);
-    }*/
+        
+    }
 
   return (
     <div className={styles['main-container']}>
@@ -66,7 +50,7 @@ function Login(props: Props) {
                 <div className={styles['form-group']}>
                     <label htmlFor="username" className="label-email"><i className="fas fa-envelope"></i>Username</label>
                     <input id="name" type="text" className="input"
-                    value={username}
+                    value={userName}
                     onChange={handleUsernameChange}
                     required
                     />

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { toast } from "react-toastify";
 
 export const handleError = (error: any) => {
     if(axios.isAxiosError(error)) {
@@ -14,7 +13,7 @@ export const handleError = (error: any) => {
             }
         } else if (err?.data) {
             alert(err.data);
-        }else if (err?.status == 401){
+        }else if (err?.status == 401 || err?.status === 403){
             alert("Please login");
             window.history.pushState({}, "Login", "/");
         }else if (err) {

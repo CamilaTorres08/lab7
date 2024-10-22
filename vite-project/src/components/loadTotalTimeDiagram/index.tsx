@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { Chart, ChartConfiguration, Colors } from 'chart.js';
-import {Task} from '../Services/TaskObject'
 import { getTasks } from '../Services/Service'; 
 const colors = {
     PURPLE: '#afd1c6',
@@ -16,7 +15,7 @@ type Props = {
 
 async function callTasks(idUser : string) {
     const res = await getTasks(idUser);
-    return res.data; 
+    return res; 
     
 }
 

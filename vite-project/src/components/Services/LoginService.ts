@@ -1,6 +1,5 @@
 import axios from "axios";
 import { handleError } from "../Services/ErrorHandler";
-import {User} from "./UserObj";
 
 const API = 'http://localhost:80/auth/';
 
@@ -16,7 +15,7 @@ export const RegisterNewUser = async (userName: string, mail: string, password: 
         sessionStorage.setItem("token", res.data.token);
         sessionStorage.setItem("user", res.data.userId);
         return res;
-    }catch (error){
+    }catch (error: any){
         handleError(error);
     }
     
@@ -32,6 +31,7 @@ export const LoginUser = async (userName: string, password:string) => {
         sessionStorage.setItem("user", res.data.userId);
         return res;
     }catch (error){
+        
         handleError(error);
     }
     

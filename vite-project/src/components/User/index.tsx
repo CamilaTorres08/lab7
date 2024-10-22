@@ -1,53 +1,36 @@
 import React, { useEffect,useState } from 'react'
 import NavBar  from '../NavBar/NavBar'; 
 import { Outlet } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { getUser } from '../Services/Service'; 
-import { ToastContainer } from 'react-toastify';
-import { UserProvider } from '../Context/UseAuth';
-import { TaskProvider } from '../Context/taskAuth';
+import { jwtDecode } from "jwt-decode";
 
 
 function UserRouter ()  {
 
   const [userName, setUserName] = useState('');
 
-  const { idUser } = useParams();
+  const [idUser, setIdUser ] = useState<string | null>(null);
 
   useEffect(() => {
-    if (idUser) {
+    const id = sessionStorage.getItem("user");
+    if (id) {
+      setIdUser(id);
       getUserTask();
     }
   }, [idUser]);
 
   const getUserTask = async () => {
-    setUserName('prueba');
-    /*try {
-      if(idUser) {
-        const answer = await getUser(idUser); 
-        if (answer && answer.data) {
-          setUserName(answer.data || '');
-        }
-      }   
-    } catch (error: any) {
-      if (error.response) {
-          console.error("Error en el servidor: ", error.response.data);
-          alert(error.response.data);
-      } else if (error.request) {
-          console.error("No se recibió respuesta del servidor", error.request);
-          alert( error.request);
-      } else {
-          console.error("Error desconocido: ", error.message);
-          alert( error.message);
-      }
-  }*/
+    const token = sessionStorage.getItem("token");
+    if(idUser && token) {
+      const username = Object.entries(jwtDecode(token))[1][1];
+      setUserName(username);
+    }   
   };
   
 
   return (
     <>
-      <NavBar username={userName} idUser={ idUser }/>
-      <Outlet context={{ idUser }} />
+      <NavBar username={userName} />
+      <Outlet  />
     </>
   )
 }

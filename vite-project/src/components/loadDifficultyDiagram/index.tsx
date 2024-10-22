@@ -18,7 +18,7 @@ type Props = {
 
 async function callTasks(idUser : string) {
     const res = await getTasks(idUser);
-    return res.data; 
+    return res; 
     
 }
 

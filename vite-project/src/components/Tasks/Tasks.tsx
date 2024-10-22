@@ -3,12 +3,10 @@ import styles from './Task.module.css'
 import Load from './Load';
 import * as serviceTasks from '../Services/Service';
 import { Task } from "../Services/TaskObject";
-import { useOutletContext } from 'react-router-dom';
-import { useAuth } from '../Context/UseAuth';
 
 
 export default function Tasks() {
-    const { idUser } = useOutletContext<{ idUser: string }>();
+
     const [post, setPost] = useState<Task[]>([]);
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
@@ -17,9 +15,8 @@ export default function Tasks() {
     const [taskPriority, setTaskPriority] = useState(1);
     const [taskTime, setTaskTime] = useState(0.1);
     const [enableButton, setEnableButton] = useState(false);
+    const [idUser, setIdUser] = useState<string | null>(null);
     
-    const { getTasks } = useAuth();
-
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTaskName(e.target.value);
     }
@@ -40,18 +37,21 @@ export default function Tasks() {
     }
 
     useEffect(() => {
-        if (idUser) {
-          console.log(getTasks()); 
+        const id = sessionStorage.getItem("user");
+        if (id) {
+          setIdUser(id);
+          getTasks(); 
         }
       }, [idUser]);
 
-      /*const getTasks = async () => {
-        await serviceTasks.getTasks(idUser).then((res) => {
-            if(res){
-                console.log(res);
+      const getTasks = async () => {
+        if(idUser){
+            const answer = await serviceTasks.getTasks(idUser);
+            if (answer) {
+                setPost(answer);
             }
-        }).catch((e) => alert("Server error occured")); 
-      };*/
+        }
+      };
     
     const addTask = async () => {   
         if (!taskName || !taskDescription || !taskDate || !taskDifficulty || !taskPriority || !taskTime) {
@@ -88,9 +88,10 @@ export default function Tasks() {
             priority: taskPriority,
             estimatedTime: taskTime
           };
-        
-        await serviceTasks.saveNewTask(idUser, updatedTask);
-        getTasks();
+        if(idUser) {
+            await serviceTasks.saveNewTask(idUser, updatedTask);
+            getTasks();
+        }
         
         setTaskName('');
         setTaskDescription('');
@@ -125,7 +126,6 @@ export default function Tasks() {
         }
         console.log(enableButton);
     };
-
 
   return (
     <div className={styles['main-container']}>
